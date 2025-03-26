@@ -25,7 +25,7 @@ async function subscriber(): Promise<void> {
     const connection = await amqp.connect(amqpUrl);
     const channel = await connection.createChannel();
 
-    const queueName = "lendsqr";
+    const queueName = process.env.QUEUE_NAME;
     await channel.assertQueue(queueName, { durable: true });
 
     channel.consume(
