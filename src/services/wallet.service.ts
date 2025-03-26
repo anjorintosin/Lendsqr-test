@@ -44,7 +44,7 @@ export const fundWallet = async (payload: FundWalletPayload): Promise<any> => {
 
     const queueData = {
         type: "credit_wallet",
-        queueName: "lendsqr",
+        queueName: process.env.QUEUE_NAME,
         userId,
         amount
     }
@@ -86,7 +86,7 @@ export const withdrawFunds = async (payload: WithdrawFundsPayload): Promise<any>
   
       const queueData = {
         type: "debit_wallet",
-        queueName: "lendsqr",
+        queueName: process.env.QUEUE_NAME,
         userId,
         amount,
       };
@@ -131,7 +131,7 @@ export const transferFunds = async (payload: TransferPayload): Promise<any> => {
       await setCache(cacheKey, "true", 30);
   
       const queueData = {
-        queueName: "lendsqr",
+        queueName: process.env.QUEUE_NAME,
         type: "process_transfer",
         userId,
         recipientId,
