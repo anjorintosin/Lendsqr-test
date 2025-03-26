@@ -1,0 +1,27 @@
+[
+    {
+      "id": "b3e1a8c5-7f6d-4d25-b6fc-0f1a9e7c2a8d",
+      "name": "TRANSFER_FUNDS",
+      "module": "User",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "9f5b4d2c-1a3e-4b98-8e7f-6c0d5a1b2f3c",
+      "name": "WITHDRAW_FUNDS",
+      "module": "Wallet",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "d7a2f9c8-5e4b-4a19-97f6-3c8b1d2e0a7f",
+      "name": "FUND_WALLET",
+      "module": "Wallet",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "fa9e3b6d-2c1f-48d7-b5a4-0c7e6f8d9a2b",
+      "name": "Withdraw Funds",
+      "module": "Wallet",
+      "status": "ACTIVE"
+    }
+  ]
+  
