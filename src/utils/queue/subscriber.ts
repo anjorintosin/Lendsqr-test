@@ -36,7 +36,6 @@ async function subscriber(): Promise<void> {
           const handler = messageHandlers[message.type];
 
           if (handler) {
-            console.log(`Processing ${message.queueName}:`, message);
             try {
               await handler(message);
               channel.ack(msg);

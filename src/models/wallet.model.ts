@@ -89,8 +89,6 @@ await transaction("wallets").where({ person_id: personId }).update({
         updated_at: null,
       });
   
-      console.log("Transaction recorded:", reference);
-  
       if (!trx) {
         await transaction.commit();
       }

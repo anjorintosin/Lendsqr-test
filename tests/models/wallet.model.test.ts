@@ -121,8 +121,6 @@ describe("User Service", () => {
 
       const result = await loginUser("anjorintosin077@gmail.com", "hashedPassword");
 
-      console.log("Login Result:", result);
-
       expect(result).toEqual({
         success: true,
         message: "Login successful",

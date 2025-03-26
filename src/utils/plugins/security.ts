@@ -21,5 +21,4 @@ export const registerSecurity = async (server: Hapi.Server) => {
     return h.continue;
   });
 
-  console.log("Security middleware initialized");
 };

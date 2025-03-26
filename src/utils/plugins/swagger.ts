@@ -33,5 +33,4 @@ export const registerSwagger = async (server: Hapi.Server) => {
     },
   ]);
 
-  console.log("Swagger documentation registered at /documentation");
 };
