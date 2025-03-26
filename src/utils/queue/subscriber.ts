@@ -4,11 +4,12 @@ import { creditPersonWallet, debitPersonWallet, processTransfer } from "../walle
 
 dotenv.config();
 
-const amqpUrl = `amqps://lnizswzu:z9KnfkQh-zpebU66ruwz11Ls491dM6WX@rattlesnake.rmq.cloudamqp.com/lnizswzu`
+const amqpUrl = `amqps://lnizswzu:z9KnfkQh-zpebU66ruwz11Ls491dM6WX@rattlesnake.rmq.cloudamqp.com/lnizswzu`;
 
 interface Message {
   queueName: string;
   userId: string;
+  type: string;
   amount: number;
   recipientId: string;
 }
@@ -32,16 +33,21 @@ async function subscriber(): Promise<void> {
       async (msg: any) => {
         if (msg !== null) {
           const message: Message = JSON.parse(msg.content.toString());
+          const handler = messageHandlers[message.type];
 
-          const handler = messageHandlers[message.queueName];
           if (handler) {
             console.log(`Processing ${message.queueName}:`, message);
-            await handler(message);
+            try {
+              await handler(message);
+              channel.ack(msg);
+            } catch (error) {
+              console.error(`Error processing ${message.queueName}:`, error);
+              channel.nack(msg, false, true);
+            }
           } else {
             console.warn(`No handler for queue: ${message.queueName}`);
+            channel.ack(msg);
           }
-
-          channel.ack(msg);
         }
       },
       { noAck: false }

@@ -6,7 +6,7 @@ export const registerRateLimit = async (server: Hapi.Server) => {
   
   await server.register({
     plugin: rateLimit,
-    options: {}, // Start with an empty config to avoid errors
+    options: {},
   });
 
   console.log("Rate limiting middleware initialized");

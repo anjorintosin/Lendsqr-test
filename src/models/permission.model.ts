@@ -45,5 +45,6 @@ export const findPersonAuthorizations = async (personId: string) => {
   return await knex("people_authorzation")
     .join("authorization", "people_authorzation.authorization_id", "authorization.id")
     .where("people_authorzation.person_id", personId)
-    .select("authorization.name");
+    .select("authorization.name", "authorization.status");
 };
+

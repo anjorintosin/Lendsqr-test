@@ -3,7 +3,7 @@ import { verifyPin } from "../utils/verifyPin";
 import { error } from "../utils/errorHandler";
 import constants from "../utils/constants";
 import { producer } from "../utils/queue";
-import { findWalletByPersonId, updateWalletBalance, updateWalletLedgerBalance } from "../models/wallet.model";
+import { findWalletByPersonId, getUserTransactions, updateWalletBalance, updateWalletLedgerBalance } from "../models/wallet.model";
 
 interface FundWalletPayload {
   userId: string;
@@ -38,7 +38,7 @@ export const fundWallet = async (payload: FundWalletPayload): Promise<any> => {
       return { error: `Wallet ${constants.NOT_FOUND}` }
     }
 
-    await setCache(cacheKey, "true", 30);
+   await setCache(cacheKey, "true", 30);
 
     await updateWalletLedgerBalance(userId, amount, "credit");
 
@@ -125,6 +125,9 @@ export const transferFunds = async (payload: TransferPayload): Promise<any> => {
       const recipientWallet = await findWalletByPersonId(recipientId);
       if (!recipientWallet) return { error: `Beneficiary Account ${constants.NOT_FOUND}` }
   
+      await updateWalletLedgerBalance(userId, amount, "debit");
+      await updateWalletLedgerBalance(recipientId, amount, "credit");
+
       await setCache(cacheKey, "true", 30);
   
       const queueData = {
@@ -143,3 +146,25 @@ export const transferFunds = async (payload: TransferPayload): Promise<any> => {
     }
 };
 
+export const getWallet = async (personId: string): Promise<any> => {
+    const wallet = await findWalletByPersonId(personId);
+    if (!wallet) {
+      return { error: `Wallet ${constants.NOT_FOUND}` };
+    }
+    return wallet;
+  };
+
+
+  export const getUserTransactionsService = async (personId: string, limit: number = 10, offset: number = 0): Promise<any> => {
+    const wallet = await findWalletByPersonId(personId);
+    if (!wallet) {
+      return { error: `Wallet ${constants.NOT_FOUND}` };
+    }
+  
+    const userTransactions = await getUserTransactions(personId, limit, offset)
+    return {
+        count: userTransactions.length,
+        data: userTransactions,
+    }
+  };
+  

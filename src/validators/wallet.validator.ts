@@ -16,3 +16,7 @@ export const transferFundsSchema = Joi.object({
     pin: Joi.string().length(4).pattern(/^\d+$/).required(),
 });
   
+export const getUserTransactionsSchema = Joi.object({
+    limit: Joi.number().integer().positive().default(10),
+    offset: Joi.number().integer().min(0).default(0),
+});

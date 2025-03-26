@@ -9,7 +9,7 @@ export const registerRoutes = (server: Hapi.Server) => {
     method: "GET",
     path: "/",
     options: {
-      auth: false, // Disable authentication for this route
+      auth: false,
     },
     handler: () => ({
       message: "Server is running 🚀",

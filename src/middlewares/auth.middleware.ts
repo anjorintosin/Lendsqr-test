@@ -5,7 +5,7 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY || "your-secret-key";
 
-export const authMiddleware = async (request: Request, h: ResponseToolkit): Promise<Lifecycle.ReturnValue> => {
+export const authMiddleware = async (request: Request, h: ResponseToolkit) => {
   const authHeader = request.headers.authorization;
 
   if (!authHeader) {
@@ -20,9 +20,9 @@ export const authMiddleware = async (request: Request, h: ResponseToolkit): Prom
       throw new Error("Invalid token");
     }
 
-    request.auth.credentials = { userId };
+    (request.auth as any).credentials = { userId };
 
-    return h.authenticated({ credentials: { userId } });
+    return h.continue;
   } catch (error) {
     return h.response({ message: "Invalid token" }).code(401).takeover();
   }

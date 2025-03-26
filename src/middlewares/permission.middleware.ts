@@ -12,7 +12,6 @@ export const validatePermission = async (req: Request, requiredPermissions: stri
     if (!userPermissions || userPermissions.length === 0) {
       throw error(403, constants.NO_PERMISSION);
     }
-
     const activePermissions = userPermissions
       .filter((perm) => perm.status === "ACTIVE")
       .map((perm) => perm.name);

@@ -6,5 +6,5 @@ export const generateAuthToken = (userId: string): string => {
 
     const token = Buffer.from(`${userId}:${SECRET_KEY}`).toString("base64");
     
-    return `Bearer ${token}`;
+    return `${token}`;
   };  
