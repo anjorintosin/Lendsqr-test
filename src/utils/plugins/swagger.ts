@@ -5,6 +5,11 @@ import HapiSwagger from "hapi-swagger";
 import Pack from "../../../package.json";
 
 export const registerSwagger = async (server: Hapi.Server) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  const baseUrl = isProduction
+    ? process.env.BASE_URL
+    : "localhost:3000";
+
   await server.register([
     Inert,
     Vision,
@@ -16,8 +21,8 @@ export const registerSwagger = async (server: Hapi.Server) => {
           version: Pack.version,
           description: "API documentation for the Wallet Service",
         },
-        schemes: ["http"],
-        host: "localhost:3000",
+        schemes: isProduction ? ["https"] : ["http"],
+        host: baseUrl,
         basePath: "/",
         grouping: "tags",
         securityDefinitions: {
@@ -32,5 +37,4 @@ export const registerSwagger = async (server: Hapi.Server) => {
       },
     },
   ]);
-
 };
