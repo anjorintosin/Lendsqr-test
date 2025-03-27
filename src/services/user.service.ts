@@ -64,7 +64,7 @@ export const loginUser = async (email: string, password: string): Promise<any> =
       return { error: constants.INVALID_CREDENTIALS }
     }
 
-    const { password: _, ...userData } = user;
+    const { password: _, pin, ...userData } = user;
     const token = generateAuthToken(userData.id)
 
     return { success: true, message: "Login successful", user: userData, token };
