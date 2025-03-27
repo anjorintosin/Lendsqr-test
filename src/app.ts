@@ -17,7 +17,7 @@ Model.knex(db);
 export const createServer = async () => {
   const server = Hapi.server({
     port: process.env.PORT || 3000,
-    host: process.env.SERVER_HOST,
+    host: process.env.NODE_ENV === "production" ? "0.0.0.0" : "localhost",
     routes: {
       cors: {
         origin: ["*"],
