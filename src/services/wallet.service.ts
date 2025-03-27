@@ -50,7 +50,7 @@ export const fundWallet = async (payload: FundWalletPayload): Promise<any> => {
     }
     await producer(queueData);
 
-    return { message: "Request processed successfully" };
+    return { message: "Funding processed successfully" };
   } catch (err) {
     return { error: err.message || constants.GENERIC_ERROR };
   }
