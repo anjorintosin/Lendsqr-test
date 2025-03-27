@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import Knex from "knex";
 import { Model } from "objection";
 import knexConfig from "./config/knexfile";
-import { registerRateLimit } from "./middlewares/rateLimit.middleware";
 import { registerSecurity } from "./utils/plugins/security";
 import { registerSwagger } from "./utils/plugins/swagger";
 import { authMiddleware } from "./middlewares/auth.middleware";
@@ -26,7 +25,6 @@ export const createServer = async () => {
     },
   });
 
-  await registerRateLimit(server);
   await registerSecurity(server);
   await registerSwagger(server);
   subscriber();
