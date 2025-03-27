@@ -10,6 +10,8 @@ import {
 export const creditPersonWallet = async (personId: string, amount: number): Promise<void> => {
   try {
     const wallet = await findWalletByPersonId(personId);
+
+    console.log(wallet)
     if (!wallet) {
       throw error(404, `Wallet ${constants.NOT_FOUND}`);
     }

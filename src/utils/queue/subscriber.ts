@@ -34,7 +34,7 @@ async function subscriber(): Promise<void> {
         if (msg !== null) {
           
           const message: Message = JSON.parse(msg.content.toString());
-          console.log(message, amqpUrl)
+          console.log(`----->>>>> subscriber`,message, amqpUrl)
           const handler = messageHandlers[message.type];
 
           if (handler) {
