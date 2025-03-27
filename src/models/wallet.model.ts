@@ -51,55 +51,63 @@ export const createWallet = async (personId: string, trx?: Knex.Transaction): Pr
 export const findWalletByPersonId = async (personId: string): Promise<Wallet | null> => {
   return (await knex("wallets").where({ person_id: personId }).first()) || null;
 };
+
+
 export const updateWalletBalance = async (
-    personId: string,
-    amount: number,
-    type: "credit" | "debit",
-    trx?: Knex.Transaction
-  ): Promise<void> => {
-    const qb = trx ? trx("wallets") : knex("wallets");
-  
-    const wallet = await qb.where({ person_id: personId }).first();
-    if (!wallet) {
-      throw new Error("Wallet not found");
-    }
+  personId: string,
+  amount: number,
+  type: "credit" | "debit",
+  trx?: Knex.Transaction
+): Promise<void> => {
+  const qb = trx ? trx("wallets") : knex("wallets");
 
-    const currentBalance = Number(wallet.ledger_balance) || 0;
-    const newBalance = type === "credit" ? currentBalance + amount : currentBalance - amount;
+  const wallet = await qb.where({ person_id: personId }).first();
+  if (!wallet) {
+    throw new Error("Wallet not found");
+  }
 
-    const reference = uuidv4();
-  
-    const transaction = trx || (await knex.transaction());
-  
-    try {
-await transaction("wallets").where({ person_id: personId }).update({
+  // Use balance or ledger_balance based on your logic. Here we're using ledger_balance.
+  const currentBalance = Number(wallet.ledger_balance) || 0;
+  const newBalance = type === "credit" ? currentBalance + amount : currentBalance - amount;
+
+  const reference = uuidv4();
+
+  const transaction = trx || (await knex.transaction());
+
+  try {
+    await transaction("wallets")
+      .where({ person_id: personId })
+      .update({
+        // Update ledger_balance, and also update previous_balance and balance if needed
+        previous_balance: currentBalance,
+        balance: newBalance,
         ledger_balance: newBalance,
       });
-  
-      await transaction("user_transactions").insert({
-        id: uuidv4(),
-        person_id: personId,
-        type: type.toUpperCase(),
-        amount: amount,
-        amount_before: currentBalance,
-        amount_after: newBalance,
-        reference: reference,
-        status: "SUCCESS",
-        created_at: knex.fn.now(),
-        updated_at: null,
-      });
-  
-      if (!trx) {
-        await transaction.commit();
-      }
-    } catch (error) {
-      console.error("Error updating balance and recording transaction:", error);
-      if (!trx) {
-        await transaction.rollback();
-      }
-      throw error;
+
+    await transaction("user_transactions").insert({
+      id: uuidv4(),
+      person_id: personId,
+      type: type.toUpperCase(),
+      amount: amount,
+      amount_before: currentBalance,
+      amount_after: newBalance,
+      reference: reference,
+      status: "SUCCESS",
+      created_at: knex.fn.now(),
+      updated_at: null,
+    });
+
+    if (!trx) {
+      await transaction.commit();
     }
-  };
+  } catch (error) {
+    console.error("Error updating balance and recording transaction:", error);
+    if (!trx) {
+      await transaction.rollback();
+    }
+    throw error;
+  }
+};
 
 export const updateWalletLedgerBalance = async (
     personId: string,

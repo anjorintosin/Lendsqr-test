@@ -11,7 +11,6 @@ export const creditPersonWallet = async (personId: string, amount: number): Prom
   try {
     const wallet = await findWalletByPersonId(personId);
 
-    console.log(wallet)
     if (!wallet) {
       throw error(404, `Wallet ${constants.NOT_FOUND}`);
     }

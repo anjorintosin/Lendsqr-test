@@ -19,7 +19,6 @@ async function producer(message: Message): Promise<void> {
 
     const messageBuffer = Buffer.from(JSON.stringify(message));
 
-    console.log(`----->>>>> producer`,message, amqpUrl)
     channel.sendToQueue(message.queueName, messageBuffer, { persistent: true });
 
 
