@@ -67,6 +67,7 @@ export const updateWalletBalance = async (
   }
 
   const currentBalance = Number(wallet.balance) || 0;
+  
   const newBalance = type === "credit" ? wallet.balance + amount : wallet.balance - amount;
 
   const reference = uuidv4();
