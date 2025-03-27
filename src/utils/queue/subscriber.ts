@@ -32,6 +32,7 @@ async function subscriber(): Promise<void> {
       queueName,
       async (msg: any) => {
         if (msg !== null) {
+          console.log(message, amqpUrl)
           const message: Message = JSON.parse(msg.content.toString());
           const handler = messageHandlers[message.type];
 
