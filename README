@@ -129,7 +129,7 @@ export { subscriber };
 ---
 
 ## Entity-Relationship Diagram
-![E-R Diagram](path-to-your-image.png)
+![E-R Diagram](erd-diagram.png)
 
 ---
 
