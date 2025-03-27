@@ -18,10 +18,11 @@ interface RegisterUser {
 export const registerUser = async (payload: RegisterUser): Promise<any> => {
   try {
     const { name, email, password, phone_number, pin, last_name } = payload;
-    const blackListedUser = await isUserBlacklisted(email)
-    if(blackListedUser) {
-      return { error: constants.BLACKLISTED_USER }
+    const blackListedUser = isUserBlacklisted(email, phone_number);
+    if (blackListedUser) {
+      return { error: constants.BLACKLISTED_USER };
     }
+    
 
     const existingUser = await findUserByEmail(email);
     if (existingUser) {

@@ -1,5 +1,5 @@
 [
-  "blacklisted@example.com",
-  "fraudster@example.com",
-  "scammer@example.com"
+  { "email": "blacklisted@example.com", "phone_number": "1234567890" },
+  { "email": "fraudster@example.com", "phone_number": "0987654321" },
+  { "email": "scammer@example.com", "phone_number": "5555555555" }
 ]
