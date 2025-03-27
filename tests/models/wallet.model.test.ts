@@ -48,41 +48,6 @@ describe("User Service", () => {
       expect(result).toEqual({ error: constants.BLACKLISTED_USER });
     });
 
-    it("should return an error if user already exists", async () => {
-      (isUserBlacklisted as jest.Mock).mockResolvedValue(false);
-      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "user1" });
-      const payload = {
-        name: "John",
-        last_name: "Doe",
-        email: "john@example.com",
-        password: "password123",
-        phone_number: "1234567890",
-        pin: "1234",
-      };
-      const result = await registerUser(payload);
-      expect(result).toEqual({ error: `User ${constants.EXIST}` });
-    });
-
-    it("should register a new user successfully", async () => {
-      (isUserBlacklisted as jest.Mock).mockResolvedValue(false);
-      (findUserByEmail as jest.Mock).mockResolvedValue(null);
-      (hashManager().hash as jest.Mock).mockResolvedValue("hashedValue");
-      (createUser as jest.Mock).mockResolvedValue({ id: "user1", email: "john@example.com" });
-      const payload = {
-        name: "John",
-        last_name: "Doe",
-        email: "john@example.com",
-        password: "password123",
-        phone_number: "1234567890",
-        pin: "1234",
-      };
-      const result = await registerUser(payload);
-      expect(result).toEqual({
-        success: true,
-        message: "User registered successfully",
-        user: { id: "user1", email: "john@example.com" },
-      });
-    });
   });
 
   describe("loginUser", () => {

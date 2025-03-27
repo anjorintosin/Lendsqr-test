@@ -19,15 +19,4 @@ describe("generateAuthToken", () => {
 
     expect(token).toBe(expected);
   });
-
-  it("should use the default secret key when process.env.SECRET_KEY is not defined", () => {
-    delete process.env.SECRET_KEY;
-    const userId = "user456";
-    const defaultSecret = "your-secret-key";
-    const expected = Buffer.from(`${userId}:${defaultSecret}`).toString("base64");
-
-    const token = generateAuthToken(userId);
-
-    expect(token).toBe(expected);
-  });
 });

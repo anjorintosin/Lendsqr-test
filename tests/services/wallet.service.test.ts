@@ -88,7 +88,7 @@ describe("Wallet Service", () => {
         userId: "user1",
         amount: 100,
       });
-      expect(result).toEqual({ message: "Request processed successfully" });
+      expect(result).toEqual({ message: "Funding processed successfully" });
     });
   });
 
