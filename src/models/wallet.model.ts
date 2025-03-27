@@ -66,9 +66,8 @@ export const updateWalletBalance = async (
     throw new Error("Wallet not found");
   }
 
-  // Use balance or ledger_balance based on your logic. Here we're using ledger_balance.
-  const currentBalance = Number(wallet.ledger_balance) || 0;
-  const newBalance = type === "credit" ? currentBalance + amount : currentBalance - amount;
+  const currentBalance = Number(wallet.balance) || 0;
+  const newBalance = type === "credit" ? wallet.balance + amount : wallet.balance - amount;
 
   const reference = uuidv4();
 
@@ -78,7 +77,6 @@ export const updateWalletBalance = async (
     await transaction("wallets")
       .where({ person_id: personId })
       .update({
-        // Update ledger_balance, and also update previous_balance and balance if needed
         previous_balance: currentBalance,
         balance: newBalance,
         ledger_balance: newBalance,
