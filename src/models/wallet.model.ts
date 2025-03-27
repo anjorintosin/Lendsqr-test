@@ -67,8 +67,6 @@ export const updateWalletBalance = async (
   }
 
   const currentBalance = Number(wallet.balance) || 0;
-  
-  const newBalance = type === "credit" ? wallet.balance + amount : wallet.balance - amount;
 
   const reference = uuidv4();
 
@@ -79,8 +77,7 @@ export const updateWalletBalance = async (
       .where({ person_id: personId })
       .update({
         previous_balance: currentBalance,
-        balance: newBalance,
-        ledger_balance: newBalance,
+        balance: wallet.ledger_balance,
       });
 
     await transaction("user_transactions").insert({
@@ -89,7 +86,7 @@ export const updateWalletBalance = async (
       type: type.toUpperCase(),
       amount: amount,
       amount_before: currentBalance,
-      amount_after: newBalance,
+      amount_after: wallet.ledger_balance,
       reference: reference,
       status: "SUCCESS",
       created_at: knex.fn.now(),
