@@ -3,7 +3,7 @@ import { verifyPin } from "../utils/verifyPin";
 import { error } from "../utils/errorHandler";
 import constants from "../utils/constants";
 import { producer } from "../utils/queue";
-import { findWalletByPersonId, getUserTransactions, updateWalletBalance, updateWalletLedgerBalance } from "../models/wallet.model";
+import { findWalletByPersonId, getUserTransactions, updateWalletLedgerBalance } from "../models/wallet.model";
 
 interface FundWalletPayload {
   userId: string;

@@ -84,7 +84,7 @@ describe("Wallet Service", () => {
       expect(updateWalletLedgerBalance).toHaveBeenCalledWith("user1", 100, "credit");
       expect(producer).toHaveBeenCalledWith({
         type: "credit_wallet",
-        queueName: "lendsqr",
+        queueName: undefined,
         userId: "user1",
         amount: 100,
       });
@@ -152,7 +152,7 @@ describe("Wallet Service", () => {
       expect(updateWalletLedgerBalance).toHaveBeenCalledWith("user1", 50, "debit");
       expect(producer).toHaveBeenCalledWith({
         type: "debit_wallet",
-        queueName: "lendsqr",
+        queueName: undefined,
         userId: "user1",
         amount: 50,
       });
@@ -280,7 +280,7 @@ describe("Wallet Service", () => {
       expect(updateWalletLedgerBalance).toHaveBeenNthCalledWith(2, "user2", 50, "credit");
       expect(setCache).toHaveBeenCalledWith(`transfer:user1`, "true", 30);
       expect(producer).toHaveBeenCalledWith({
-        queueName: "lendsqr",
+        queueName: undefined,
         type: "process_transfer",
         userId: "user1",
         recipientId: "user2",

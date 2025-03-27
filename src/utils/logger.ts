@@ -1,4 +1,11 @@
 import winston from "winston";
+import fs from "fs";
+import path from "path";
+
+const logDir = "logs";
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
 
 const logFormat = winston.format.combine(
   winston.format.timestamp(),
@@ -7,12 +14,19 @@ const logFormat = winston.format.combine(
   })
 );
 
+const jsonFormat = winston.format.combine(
+  winston.format.timestamp(),
+  winston.format.json()
+);
+
+
 const logger = winston.createLogger({
-  level: "info",
-  format: logFormat,
+  level: process.env.LOG_LEVEL || "info",
+  format: process.env.NODE_ENV === "production" ? jsonFormat : logFormat,
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "logs/error.log", level: "error" }), // Log errors to file
+    new winston.transports.File({ filename: path.join(logDir, "error.log"), level: "error" }),
+    new winston.transports.File({ filename: path.join(logDir, "combined.log") }),
   ],
 });
 

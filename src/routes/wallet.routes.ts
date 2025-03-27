@@ -17,9 +17,9 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 export const walletRoutes: Hapi.ServerRoute[] = [
   {
     method: "POST",
-    path: "/wallet/fund",
+    path: "/wallets/fund",
     options: {
-      auth: "default",
+      auth: false,
       pre: [authMiddleware],
       tags: ["api", "Wallet"],
       description: "Fund wallet",
@@ -43,7 +43,7 @@ export const walletRoutes: Hapi.ServerRoute[] = [
   },
   {
     method: "POST",
-    path: "/wallet/withdraw",
+    path: "/wallets/withdraw",
     options: {
       auth: false,
       pre: [authMiddleware],

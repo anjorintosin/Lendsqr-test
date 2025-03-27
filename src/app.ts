@@ -40,5 +40,13 @@ export const createServer = async () => {
 
   registerRoutes(server);
 
+  process.on("SIGINT", async () => {
+    console.log("Shutting down gracefully...");
+    await db.destroy();
+    await server.stop();
+    console.log("Server stopped.");
+    process.exit(0);
+  });
+
   return server;
 };

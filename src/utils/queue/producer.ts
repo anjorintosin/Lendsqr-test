@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const amqpUrl = `amqps://lnizswzu:z9KnfkQh-zpebU66ruwz11Ls491dM6WX@rattlesnake.rmq.cloudamqp.com/lnizswzu`
+const amqpUrl = process.env.AMQP_URL;
 
 interface Message {
   queueName: string;

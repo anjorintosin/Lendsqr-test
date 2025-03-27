@@ -7,14 +7,12 @@ export async function up(knex: Knex): Promise<void> {
     table.string("authorization_id", 191).notNullable().unique();
     table.timestamp("created_at").defaultTo(knex.fn.now());
 
-    // Foreign key: person_id references id in the people table.
     table
       .foreign("person_id")
       .references("id")
       .inTable("people")
       .onDelete("CASCADE");
 
-    // Foreign key: authorization_id references id in the authorization table.
     table
       .foreign("authorization_id")
       .references("id")

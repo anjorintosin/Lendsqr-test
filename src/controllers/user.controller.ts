@@ -46,7 +46,7 @@ export const loginUserController = async (req: Request, h: ResponseToolkit) => {
       };
   
       const user = await loginUser(payload.email, payload.password);
-      if (!user) {
+      if (user.error) {
         throw error(401, user.error);
       }
   

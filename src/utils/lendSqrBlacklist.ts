@@ -1,11 +1,12 @@
-import blackListedUsersJSON from './blacklistedUsers.json'
+import blackListedUsersJSON from './blacklistedUsers.json';
 
-export const isUserBlacklisted = async (email: string): Promise<boolean> => {
+const blackListedUsersSet = new Set(blackListedUsersJSON.map((email: string) => email.toLowerCase()));
+
+export const isUserBlacklisted = (email: string): boolean => {
   try {
-
-    return blackListedUsersJSON.includes(email.toLowerCase());
+    return blackListedUsersSet.has(email.toLowerCase());
   } catch (error) {
-    console.error("Error reading blacklist file:", error);
+    console.error("Error checking blacklist:", error);
     return false; 
   }
 };
