@@ -1,9 +1,9 @@
 import * as amqp from 'amqplib';
-import * as dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const amqpUrl = process.env.AMQP_URL;
+const amqpUrl = process.env.RABBIT_MQ_URL;
 
 interface Message {
   queueName: string;
