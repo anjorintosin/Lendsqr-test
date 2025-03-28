@@ -134,14 +134,22 @@ export const updateWalletLedgerBalance = async (
     }
   };
 
-export const isWalletActive = async (personId: string): Promise<boolean> => {
-  const wallet = await knex("wallets")
-    .select("is_active")
-    .where({ person_id: personId })
-    .first();
+  export const isWalletActive = async (personId: string): Promise<boolean> => {
+    try {
+      const wallet = await knex("wallets")
+        .select("is_active")
+        .where({ person_id: personId })
+        .andWhere("is_active", true)
+        .first();
+  
+      return !!wallet;
+    } catch (err) {
+      console.error("Error checking wallet status:", err);
+      throw new Error("Failed to verify wallet status");
+    }
+  };
+  
 
-  return wallet ? wallet.is_active : false;
-};
 
 export const getUserTransactions = async (userId: string, limit = 10, offset = 0) => {
     try {
@@ -157,4 +165,3 @@ export const getUserTransactions = async (userId: string, limit = 10, offset = 0
       throw new Error("Failed to fetch transactions");
     }
   };
-
