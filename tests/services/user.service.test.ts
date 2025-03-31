@@ -5,8 +5,6 @@ import { generateAuthToken } from "../../src/utils/tokenizer";
 import { isUserBlacklisted } from "../../src/utils/lendSqrBlacklist";
 import constants from "../../src/utils/constants";
 
-const mockCompare = jest.fn();
-
 jest.mock("../../src/models/user.model", () => ({
   createUser: jest.fn(),
   findUserByEmail: jest.fn(),
@@ -14,13 +12,13 @@ jest.mock("../../src/models/user.model", () => ({
 
 jest.mock("../../src/utils/bycrpt", () => ({
   hashManager: jest.fn(() => ({
-    hash: jest.fn(),
-    compare: mockCompare,
+    hash: jest.fn((input) => Promise.resolve(`hashed_${input}`)),
+    compare: jest.fn((input, hashed) => Promise.resolve(hashed === `hashed_${input}`)),
   })),
 }));
 
 jest.mock("../../src/utils/tokenizer", () => ({
-  generateAuthToken: jest.fn(),
+  generateAuthToken: jest.fn(() => "mocked_token"),
 }));
 
 jest.mock("../../src/utils/lendSqrBlacklist", () => ({
@@ -28,66 +26,87 @@ jest.mock("../../src/utils/lendSqrBlacklist", () => ({
 }));
 
 describe("User Service", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockCompare.mockReset();
-  });
-
   describe("registerUser", () => {
-    it("should return an error if user is blacklisted", async () => {
-      (isUserBlacklisted as jest.Mock).mockResolvedValue(true);
-      const payload = {
+    it("should return an error if the user is blacklisted", async () => {
+      (isUserBlacklisted as jest.Mock).mockReturnValue(true);  // FIXED: Correctly mocking
+      const response = await registerUser({
         name: "John",
-        last_name: "Doe",
-        email: "john@example.com",
+        email: "test@example.com",
         password: "password123",
+        last_name: "Doe",
         phone_number: "1234567890",
         pin: "1234",
-      };
-      const result = await registerUser(payload);
-      expect(result).toEqual({ error: constants.BLACKLISTED_USER });
+      });
+      expect(response).toEqual({ error: constants.BLACKLISTED_USER });
+    });
+
+    it("should return an error if the user already exists", async () => {
+      (isUserBlacklisted as jest.Mock).mockReturnValue(false);
+      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "123" }); // FIXED: `mockResolvedValue` for async function
+      const response = await registerUser({
+        name: "John",
+        email: "test@example.com",
+        password: "password123",
+        last_name: "Doe",
+        phone_number: "1234567890",
+        pin: "1234",
+      });
+      expect(response).toEqual({ error: `User ${constants.EXIST}` });
+    });
+
+    it("should successfully register a new user", async () => {
+      (isUserBlacklisted as jest.Mock).mockReturnValue(false);
+      (findUserByEmail as jest.Mock).mockResolvedValue(null);
+      (createUser as jest.Mock).mockResolvedValue({ id: "123", email: "test@example.com" });
+
+      const response = await registerUser({
+        name: "John",
+        email: "test@example.com",
+        password: "password123",
+        last_name: "Doe",
+        phone_number: "1234567890",
+        pin: "1234",
+      });
+
+      expect(response).toEqual({
+        success: true,
+        message: "User registered successfully",
+        user: { id: "123", email: "test@example.com" },
+      });
     });
   });
 
   describe("loginUser", () => {
-    it("should return an error if user does not exist", async () => {
+    it("should return an error if the user is not found", async () => {
       (findUserByEmail as jest.Mock).mockResolvedValue(null);
-      const result = await loginUser("john@example.com", "password123");
-      expect(result).toEqual({ error: constants.INVALID_CREDENTIALS });
+      const response = await loginUser("test@example.com", "password123");
+      expect(response).toEqual({ error: constants.INVALID_CREDENTIALS });
     });
 
-    it("should return an error if user is inactive", async () => {
-      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "user1", status: "INACTIVE" });
-      const result = await loginUser("john@example.com", "password123");
-      expect(result).toEqual({ error: constants.INVALID_ACCESS });
+    it("should return an error if the user is inactive", async () => {
+      (findUserByEmail as jest.Mock).mockResolvedValue({ status: "INACTIVE", password: "hashed_password123" });
+      const response = await loginUser("test@example.com", "password123");
+      expect(response).toEqual({ error: constants.INVALID_ACCESS });
     });
 
-    it("should return an error if password is incorrect", async () => {
-      (findUserByEmail as jest.Mock).mockResolvedValue({
-        id: "user1",
-        password: "hashedPassword",
-        status: "ACTIVE",
-      });
-      mockCompare.mockResolvedValue(false);
-      const result = await loginUser("john@example.com", "wrongpassword");
-      expect(result).toEqual({ error: constants.INVALID_CREDENTIALS });
+    it("should return an error if the password is incorrect", async () => {
+      (findUserByEmail as jest.Mock).mockResolvedValue({ status: "ACTIVE", password: "hashed_password123" });
+      (hashManager().compare as jest.Mock).mockResolvedValue(false);  // FIXED: Properly casting `compare`
+
+      const response = await loginUser("test@example.com", "wrongpassword");
+      expect(response).toEqual({ error: constants.INVALID_CREDENTIALS });
     });
 
-    it("should log in a user successfully", async () => {
-      (findUserByEmail as jest.Mock).mockResolvedValue({
-        id: "user1",
-        email: "anjorintosin077@gmail.com",
-        password: "hashedPassword",
-        status: "ACTIVE",
-      });
-      mockCompare.mockResolvedValue(true);
-      (generateAuthToken as jest.Mock).mockReturnValue("jwt_token");
-      const result = await loginUser("anjorintosin077@gmail.com", "hashedPassword");
-      expect(result).toEqual({
+    it("should return success and token if login is successful", async () => {
+      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "123", status: "ACTIVE", password: "hashed_password123" });
+      (hashManager().compare as jest.Mock).mockResolvedValue(true);
+
+      const response = await loginUser("test@example.com", "password123");
+      expect(response).toEqual({
         success: true,
         message: "Login successful",
-        user: { id: "user1", email: "anjorintosin077@gmail.com", status: "ACTIVE" },
-        token: "jwt_token",
+        user: { id: "123", status: "ACTIVE" },
+        token: "mocked_token",
       });
     });
   });
