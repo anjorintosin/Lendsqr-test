@@ -28,7 +28,7 @@ jest.mock("../../src/utils/lendSqrBlacklist", () => ({
 describe("User Service", () => {
   describe("registerUser", () => {
     it("should return an error if the user is blacklisted", async () => {
-      (isUserBlacklisted as jest.Mock).mockReturnValue(true);  // FIXED: Correctly mocking
+      (isUserBlacklisted as jest.Mock).mockReturnValue(true);
       const response = await registerUser({
         name: "John",
         email: "test@example.com",
@@ -42,7 +42,7 @@ describe("User Service", () => {
 
     it("should return an error if the user already exists", async () => {
       (isUserBlacklisted as jest.Mock).mockReturnValue(false);
-      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "123" }); // FIXED: `mockResolvedValue` for async function
+      (findUserByEmail as jest.Mock).mockResolvedValue({ id: "123" });
       const response = await registerUser({
         name: "John",
         email: "test@example.com",
@@ -91,7 +91,7 @@ describe("User Service", () => {
 
     it("should return an error if the password is incorrect", async () => {
       (findUserByEmail as jest.Mock).mockResolvedValue({ status: "ACTIVE", password: "hashed_password123" });
-      (hashManager().compare as jest.Mock).mockResolvedValue(false);  // FIXED: Properly casting `compare`
+      (hashManager().compare as jest.Mock).mockResolvedValue(false);
 
       const response = await loginUser("test@example.com", "wrongpassword");
       expect(response).toEqual({ error: constants.INVALID_CREDENTIALS });

@@ -3,7 +3,6 @@ import knex from "../../src/config/db";
 import { v4 as uuidv4 } from "uuid";
 
 jest.mock("../../src/config/db", () => {
-  // Create a query builder mock with chainable methods.
   const mockQueryBuilder = {
     select: jest.fn(),
     insert: jest.fn(),
@@ -11,13 +10,10 @@ jest.mock("../../src/config/db", () => {
     where: jest.fn(),
   };
 
-  // Create a function that returns the query builder.
   const mockKnex = jest.fn(() => mockQueryBuilder) as any;
 
-  // Attach transaction method explicitly.
   mockKnex.transaction = jest.fn(async (callback: any) => {
     const trxMock = {
-      // Make trx callable: a function that returns the query builder.
       ...(jest.fn(() => mockQueryBuilder) as any),
       select: mockQueryBuilder.select,
       insert: mockQueryBuilder.insert,
@@ -32,7 +28,6 @@ jest.mock("../../src/config/db", () => {
   return mockKnex;
 });
 
-// Mock UUID so that it always returns "fixed-uuid".
 jest.mock("uuid", () => ({
   v4: jest.fn(() => "fixed-uuid"),
 }));
@@ -42,14 +37,12 @@ describe("Authorization Module", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    // Cast the return value as any.
     mockKnex = knex() as any;
   });
 
   describe("getAllAuthorizations", () => {
     it("should return authorizations when trx is not provided", async () => {
       const expectedAuths = [{ id: "1" }, { id: "2" }];
-      // Cast to any so TypeScript accepts the property access.
       (mockKnex.select as any).mockResolvedValue(expectedAuths);
 
       const result = await getAllAuthorizations();
@@ -61,7 +54,6 @@ describe("Authorization Module", () => {
 
     it("should return authorizations when trx is provided", async () => {
       const expectedAuths = [{ id: "1" }];
-      // Instead of passing an object, pass a function that returns a query builder.
       const trx = jest.fn((table: string) => {
         return {
           select: jest.fn().mockResolvedValue(expectedAuths),
@@ -93,7 +85,6 @@ describe("Authorization Module", () => {
     it("should insert person authorizations when authorizations exist", async () => {
       const existingAuths = [{ id: "auth-1" }, { id: "auth-2" }];
       const insertMock = jest.fn().mockResolvedValue(undefined);
-      // Create a trx function that returns different query builders based on the table.
       const trx = jest.fn((table: string) => {
         if (table === "authorization") {
           return { select: jest.fn().mockResolvedValue(existingAuths) };
@@ -105,7 +96,6 @@ describe("Authorization Module", () => {
 
       await assignPersonAuthorizations("person-1", trx as any);
 
-      // Verify that trx was called for both tables.
       expect(trx).toHaveBeenCalledWith("authorization");
       expect(trx).toHaveBeenCalledWith("people_authorzation");
       expect(insertMock).toHaveBeenCalled();
@@ -118,7 +108,6 @@ describe("Authorization Module", () => {
   describe("findPersonAuthorizations", () => {
     it("should return joined authorization details", async () => {
       const expectedResults = [{ name: "auth1", status: "active" }];
-      // Cast mockKnex.join to any so we can call .mockReturnValue.
       (mockKnex.join as any).mockReturnValue({
         where: jest.fn().mockReturnValue({
           select: jest.fn().mockResolvedValue(expectedResults),

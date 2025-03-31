@@ -1,4 +1,3 @@
-// tests/models/wallet.model.test.ts
 import {
   createWallet,
   findWalletByPersonId,
@@ -10,11 +9,7 @@ import {
 import knex from "../../src/config/db";
 import { v4 as uuidv4 } from "uuid";
 
-// --- MOCK SETUP ---
-
-// 1. Mock Knex: simulate a query builder for the "wallets" and "user_transactions" tables.
 jest.mock("../../src/config/db", () => {
-  // A generic query builder mock.
   const mockQueryBuilder = {
     insert: jest.fn(),
     where: jest.fn().mockReturnThis(),
@@ -25,22 +20,17 @@ jest.mock("../../src/config/db", () => {
     offset: jest.fn().mockResolvedValue([]),
   };
 
-  // The main knex function returns our query builder based on table name.
   const mockKnex = jest.fn((table: string) => {
-    // For simplicity, return the same mock for "wallets" and "user_transactions"
     return mockQueryBuilder;
   }) as any;
 
-  // Attach a transaction method.
   mockKnex.transaction = jest.fn(async (callback: any) => {
-    // Create a trx query builder.
     const trxQueryBuilder = {
       insert: jest.fn(),
       where: jest.fn().mockReturnThis(),
       first: jest.fn(),
       update: jest.fn(),
     };
-    // Make a callable trx function and attach commit and rollback.
     const trx = Object.assign(
       jest.fn((table: string) => {
         if (table === "wallets" || table === "user_transactions") {
@@ -56,18 +46,15 @@ jest.mock("../../src/config/db", () => {
     return callback(trx);
   });
 
-  // Provide a minimal knex.fn with now() (used in updateWalletBalance)
   mockKnex.fn = { now: jest.fn(() => "now") };
 
   return mockKnex;
 });
 
-// 2. Mock UUID so that it always returns "fixed-wallet-id".
 jest.mock("uuid", () => ({
   v4: jest.fn(() => "fixed-wallet-id"),
 }));
 
-// --- TESTS ---
 describe("Wallet Model", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -76,7 +63,6 @@ describe("Wallet Model", () => {
   describe("createWallet", () => {
     it("should create a wallet when trx is provided", async () => {
       const personId = "person-1";
-      // Simulate a trx: when called with "wallets", returns a query builder whose first() returns a wallet.
       const trxInsertMock = jest.fn().mockResolvedValue([1]);
       const trxFirstMock = jest.fn().mockResolvedValue({
         id: "fixed-wallet-id",
@@ -106,7 +92,6 @@ describe("Wallet Model", () => {
 
     it("should create a wallet when trx is not provided", async () => {
       const personId = "person-2";
-      // Override knex mock for this test.
       const knexModule = require("../../src/config/db");
       const knexInsertMock = jest.fn().mockResolvedValue([1]);
       const knexFirstMock = jest.fn().mockResolvedValue({
@@ -184,7 +169,6 @@ describe("Wallet Model", () => {
     it("should update wallet balance and record transaction when trx is provided", async () => {
       const personId = "person-1";
       const amount = 100;
-      // Simulate an existing wallet.
       const wallet = { balance: 0, ledger_balance: 150 };
       const trxUpdateMock = jest.fn().mockResolvedValue(1);
       const trxFirstMock = jest.fn().mockResolvedValue(wallet);
