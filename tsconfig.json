@@ -10,7 +10,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "lib": ["es2019"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

@@ -44,7 +44,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
-    "@types/node": "^22.13.13",
+    "@types/node": "^22.16.5",
     "@types/sinon": "^17.0.4",
     "@types/supertest": "^6.0.3",
     "hapi-rate-limit": "^7.1.0",
